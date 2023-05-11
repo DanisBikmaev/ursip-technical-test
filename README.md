@@ -1,6 +1,5 @@
 # ursip-technical-test
-
-Install requirements
+Install requirements:
 ``` pip install requirements.txt ```
-Run
+Run: 
 ``` python3 main.py ```
