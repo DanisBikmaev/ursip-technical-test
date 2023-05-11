@@ -12,14 +12,13 @@ def main():
 
     data = parse_data("file.xlsx", table_headers)
     table_with_date = add_date_to_table(data)
-    write_to_db(table_with_date)
-    pivot = make_pivot(table_with_date)
-    print(pivot)
-    
+    write_to_db(table_with_date, "db")
+    pivot_table = make_pivot(table_with_date)
+    write_to_db(pivot_table, "pivot_table")
+    print(pivot_table)
 
 
-
-def parse_data(file_name: str, table_headers: list) -> pd.DataFrame:
+def parse_data(file_name: str, table_headers: list[str]) -> pd.DataFrame:
     df = pd.read_excel(file_name)
     current_headers = df.head(1).columns.to_list()
     if current_headers != table_headers:
@@ -44,8 +43,8 @@ def add_date_to_table(df: pd.DataFrame):
     return df
 
 
-def write_to_db(df: pd.DataFrame):
-    conn = sl.connect("result.sqlite3")
+def write_to_db(df: pd.DataFrame, file_name: str):
+    conn = sl.connect(f"{file_name}.sqlite3")
     df.to_sql("parser", conn, if_exists="append", index=False)
     conn.commit()
     conn.close()
@@ -70,6 +69,7 @@ def make_pivot(df: pd.DataFrame):
                                     margins=True,
                                     margins_name="total"
                                     )
+    df_pivoted_table.reset_index(drop=False, inplace=True)
     return df_pivoted_table
 
 if __name__ == '__main__':
